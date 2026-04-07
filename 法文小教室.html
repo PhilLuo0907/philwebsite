@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="zh-Hant"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;title&gt;法文單字卡 App&lt;/title&gt;</p>
+<p class="p1">&lt;link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&amp;family=Noto+Serif+TC:wght@400;600&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">body { margin:0; height:100vh; overflow:hidden; color:white; font-family:'Noto Serif TC', serif; }</p>
+<p class="p1">.bg { position:fixed; width:100%; height:100%; background-size:cover; background-position:center; transition: opacity 1.5s ease-in-out; z-index:-1; }</p>
+<p class="p1">.header { position:absolute; top:15px; width:100%; text-align:center; font-family:'Playfair Display', serif; font-size:28px; }</p>
+<p class="p1">.container { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; }</p>
+<p class="p1">.category-buttons button { margin:5px; padding:8px 14px; border:none; border-radius:20px; background:rgba(255,255,255,0.7); cursor:pointer; font-family:'Playfair Display', serif; }</p>
+<p class="p1">.category-buttons button.active { background:#000; color:#fff; }</p>
+<p class="p1">.card { width:280px; height:220px; perspective:1200px; }</p>
+<p class="p1">.inner { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 0.8s cubic-bezier(0.4,0.2,0.2,1); }</p>
+<p class="p1">.card.flipped .inner { transform:rotateY(180deg) scale(1.05); }</p>
+<p class="p1">.front, .back {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>position:absolute; width:100%; height:100%; backface-visibility:hidden;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:rgba(255,255,255,0.2);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>backdrop-filter: blur(12px);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>color:black; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.3);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display:flex; flex-direction:column; justify-content:center; align-items:center; padding:10px;</p>
+<p class="p1">}</p>
+<p class="p1">.front b { font-size:32px; }</p>
+<p class="p1">.back { transform:rotateY(180deg); background-size:cover; background-position:center; color:white; }</p>
+<p class="p1">.speed-buttons { position:absolute; bottom:10px; }</p>
+<p class="p1">.speed-buttons button { margin:3px; padding:4px 8px; border-radius:10px; border:none; cursor:pointer; }</p>
+<p class="p1">.controls { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:15px; }</p>
+<p class="p1">.controls button { padding:8px 14px; border-radius:20px; border:none; background:rgba(255,255,255,0.7); cursor:pointer; }</p>
+<p class="p1">.play-btn { font-size:22px; padding:10px 14px; }</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="bg1" class="bg"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;div id="bg2" class="bg" style="opacity:0"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="header"&gt;🇫🇷 法文小教室&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="container"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="category-buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="setCategory('greet',this)" class="active"&gt;打招呼&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="setCategory('number',this)"&gt;數字&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="setCategory('daily',this)"&gt;日常用品&lt;/button&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="cardContainer"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="prev()"&gt;⬅️&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button class="play-btn" onclick="playCurrent()"&gt;🔊&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;button onclick="next()"&gt;➡️&lt;/button&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const data = {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>greet: [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Bonjour", zh:"你好", ex:"Bonjour, comment ça va ?", img:"https://images.unsplash.com/photo-1502602898657-3e91760cbb34"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Bonsoir", zh:"晚上好", ex:"Bonsoir tout le monde.", img:"https://images.unsplash.com/photo-1499856871958-5b9627545d1a"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Salut", zh:"嗨", ex:"Salut ! Ça va ?", img:"https://images.unsplash.com/photo-1522098543979-ffc7f79d1b3d"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Au revoir", zh:"再見", ex:"Au revoir, à demain.", img:"https://images.unsplash.com/photo-1508057198894-247b23fe5ade"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"À bientôt", zh:"待會見", ex:"À bientôt mon ami.", img:"https://images.unsplash.com/photo-1505761671935-60b3a7427bad"}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>],</p>
+<p class="p1"><span class="Apple-converted-space">  </span>number: [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Un", zh:"1", ex:"J’ai un chien.", img:"https://images.unsplash.com/photo-1517423440428-a5a00ad493e8"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Deux", zh:"2", ex:"J’ai deux chats.", img:"https://images.unsplash.com/photo-1518791841217-8f162f1e1131"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Trois", zh:"3", ex:"Trois amis arrivent.", img:"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Quatre", zh:"4", ex:"Quatre pommes.", img:"https://images.unsplash.com/photo-1567306226416-28f0efdc88ce"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Cinq", zh:"5", ex:"Cinq livres.", img:"https://images.unsplash.com/photo-1512820790803-83ca734da794"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Six", zh:"6", ex:"Six jours.", img:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Sept", zh:"7", ex:"Sept heures.", img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Huit", zh:"8", ex:"Huit étudiants.", img:"https://images.unsplash.com/photo-1522202176988-66273c2fd55f"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Neuf", zh:"9", ex:"Neuf ans.", img:"https://images.unsplash.com/photo-1500534314209-a25ddb2bd429"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Dix", zh:"10", ex:"Dix minutes.", img:"https://images.unsplash.com/photo-1500534623283-312aade485b7"}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>],</p>
+<p class="p1"><span class="Apple-converted-space">  </span>daily: [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Livre", zh:"書", ex:"Je lis un livre.", img:"https://images.unsplash.com/photo-1512820790803-83ca734da794"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Table", zh:"桌子", ex:"La table est grande.", img:"https://images.unsplash.com/photo-1492724441997-5dc865305da7"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Chaise", zh:"椅子", ex:"La chaise est confortable.", img:"https://images.unsplash.com/photo-1505691938895-1758d7feb511"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Téléphone", zh:"手機", ex:"Mon téléphone sonne.", img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Sac", zh:"包包", ex:"J’ai un sac.", img:"https://images.unsplash.com/photo-1520975916090-3105956dac38"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Stylo", zh:"筆", ex:"J’écris avec un stylo.", img:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Eau", zh:"水", ex:"Je bois de l’eau.", img:"https://images.unsplash.com/photo-1502741338009-cac2772e18bc"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Pain", zh:"麵包", ex:"Je mange du pain.", img:"https://images.unsplash.com/photo-1549931319-a545dcf3bc73"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Porte", zh:"門", ex:"La porte est ouverte.", img:"https://images.unsplash.com/photo-1505691938895-1758d7feb511"},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{fr:"Fenêtre", zh:"窗戶", ex:"La fenêtre est fermée.", img:"https://images.unsplash.com/photo-1493809842364-78817add7ffb"}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>]</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">let index = 0, category='greet', speed=1;</p>
+<p class="p2"><br></p>
+<p class="p1">function speak(text) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const speedRate = speed === 0.5 ? 0.24 : speed === 1.2 ? 0.6 : 0.4;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const url = `https://translate.google.com/translate_tts?ie=UTF-8&amp;q=${encodeURIComponent(text)}&amp;tl=fr&amp;client=tw-ob&amp;ttsspeed=${speedRate}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>new Audio(url).play();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function playCurrent(){ speak(data[category][index].fr); }</p>
+<p class="p2"><br></p>
+<p class="p1">function createCard(item) {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const card = document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>card.className = "card";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>card.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="inner"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="front"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;b&gt;${item.fr}&lt;/b&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="speed-buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onclick="event.stopPropagation();setSpeed(0.5)"&gt;0.5x&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onclick="event.stopPropagation();setSpeed(1)"&gt;1x&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;button onclick="event.stopPropagation();setSpeed(1.2)"&gt;1.2x&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="back" style="background-image:url('${item.img}')"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;${item.zh}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="font-size:14px;margin-top:8px;"&gt;${item.ex}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>card.onclick = () =&gt; card.classList.toggle("flipped");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return card;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function render(direction='next') {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const container = document.getElementById("cardContainer");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const newCard = createCard(data[category][index]);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>newCard.style.opacity=0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>newCard.style.transform = direction==='next'?'translateX(80px)':'translateX(-80px)';</p>
+<p class="p1"><span class="Apple-converted-space">  </span>container.innerHTML="";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>container.appendChild(newCard);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;{ newCard.style.transition="all 0.4s ease"; newCard.style.opacity=1; newCard.style.transform="translateX(0)"; },10);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function next(){ index=(index+1)%data[category].length; render('next'); }</p>
+<p class="p1">function prev(){ index=(index-1+data[category].length)%data[category].length; render('prev'); }</p>
+<p class="p2"><br></p>
+<p class="p1">function setCategory(cat, btn){ category=cat; index=0; document.querySelectorAll('.category-buttons button').forEach(b=&gt;b.classList.remove('active')); btn.classList.add('active'); render(); }</p>
+<p class="p1">function setSpeed(s){ speed=s; }</p>
+<p class="p2"><br></p>
+<p class="p1">const images=[</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"https://images.unsplash.com/photo-1502602898657-3e91760cbb34",</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"https://images.unsplash.com/photo-1499856871958-5b9627545d1a",</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"https://images.unsplash.com/photo-1522098543979-ffc7f79d1b3d",</p>
+<p class="p1"><span class="Apple-converted-space">  </span>"https://images.unsplash.com/photo-1508057198894-247b23fe5ade"</p>
+<p class="p1">];</p>
+<p class="p1">let bgIndex=0, bg1=document.getElementById("bg1"), bg2=document.getElementById("bg2"), showingFirst=true;</p>
+<p class="p1">function switchBg(){ bgIndex=(bgIndex+1)%images.length; const nextImg=images[bgIndex]; if(showingFirst){ bg2.style.backgroundImage=`url(${nextImg})`; bg2.style.opacity=1; bg1.style.opacity=0;} else{ bg1.style.backgroundImage=`url(${nextImg})`; bg1.style.opacity=1; bg2.style.opacity=0;} showingFirst=!showingFirst; }</p>
+<p class="p1">bg1.style.backgroundImage=`url(${images[0]})`; setInterval(switchBg,10000);</p>
+<p class="p2"><br></p>
+<p class="p1">render();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
