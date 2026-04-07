@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>法文單字卡 App</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body { margin:0; height:100vh; overflow:hidden; color:white; font-family:'Noto Serif TC', serif; }
+.bg { position:fixed; width:100%; height:100%; background-size:cover; background-position:center; transition: opacity 1.5s ease-in-out; z-index:-1; }
+.header { position:absolute; top:15px; width:100%; text-align:center; font-family:'Playfair Display', serif; font-size:28px; }
+.container { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; }
+.category-buttons button { margin:5px; padding:8px 14px; border:none; border-radius:20px; background:rgba(255,255,255,0.7); cursor:pointer; font-family:'Playfair Display', serif; }
+.category-buttons button.active { background:#000; color:#fff; }
+.card { width:280px; height:220px; perspective:1200px; }
+.inner { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 0.8s cubic-bezier(0.4,0.2,0.2,1); }
+.card.flipped .inner { transform:rotateY(180deg) scale(1.05); }
+.front, .back {
+  position:absolute; width:100%; height:100%; backface-visibility:hidden;
+  background:rgba(255,255,255,0.2);
+  backdrop-filter: blur(12px);
+  color:black; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.3);
+  display:flex; flex-direction:column; justify-content:center; align-items:center; padding:10px;
+}
+.front b { font-size:32px; }
+.back { transform:rotateY(180deg); background-size:cover; background-position:center; color:white; }
+.speed-buttons { position:absolute; bottom:10px; }
+.speed-buttons button { margin:3px; padding:4px 8px; border-radius:10px; border:none; cursor:pointer; }
+.controls { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:15px; }
+.controls button { padding:8px 14px; border-radius:20px; border:none; background:rgba(255,255,255,0.7); cursor:pointer; }
+.play-btn { font-size:22px; padding:10px 14px; }
+</style>
+</head>
+<body>
+
+<div id="bg1" class="bg"></div>
+<div id="bg2" class="bg" style="opacity:0"></div>
+
+<div class="header">🇫🇷 法文小教室</div>
+
+<div class="container">
+
+<div class="category-buttons">
+  <button onclick="setCategory('greet',this)" class="active">打招呼</button>
+  <button onclick="setCategory('number',this)">數字</button>
+  <button onclick="setCategory('daily',this)">日常用品</button>
+</div>
+
+<div id="cardContainer"></div>
+
+<div class="controls">
+  <button onclick="prev()">⬅️</button>
+  <button class="play-btn" onclick="playCurrent()">🔊</button>
+  <button onclick="next()">➡️</button>
+</div>
+
+</div>
+
+<script>
+const data = {
+  greet: [
+    {fr:"Bonjour", zh:"你好", ex:"Bonjour, comment ça va ?", img:"https://images.unsplash.com/photo-1502602898657-3e91760cbb34"},
+    {fr:"Bonsoir", zh:"晚上好", ex:"Bonsoir tout le monde.", img:"https://images.unsplash.com/photo-1499856871958-5b9627545d1a"},
+    {fr:"Salut", zh:"嗨", ex:"Salut ! Ça va ?", img:"https://images.unsplash.com/photo-1522098543979-ffc7f79d1b3d"},
+    {fr:"Au revoir", zh:"再見", ex:"Au revoir, à demain.", img:"https://images.unsplash.com/photo-1508057198894-247b23fe5ade"},
+    {fr:"À bientôt", zh:"待會見", ex:"À bientôt mon ami.", img:"https://images.unsplash.com/photo-1505761671935-60b3a7427bad"}
+  ],
+  number: [
+    {fr:"Un", zh:"1", ex:"J’ai un chien.", img:"https://images.unsplash.com/photo-1517423440428-a5a00ad493e8"},
+    {fr:"Deux", zh:"2", ex:"J’ai deux cats.", img:"https://images.unsplash.com/photo-1518791841217-8f162f1e1131"},
+    {fr:"Trois", zh:"3", ex:"Trois amis arrivent.", img:"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"},
+    {fr:"Quatre", zh:"4", ex:"Quatre pommes.", img:"https://images.unsplash.com/photo-1567306226416-28f0efdc88ce"},
+    {fr:"Cinq", zh:"5", ex:"Cinq livres.", img:"https://images.unsplash.com/photo-1512820790803-83ca734da794"},
+    {fr:"Six", zh:"6", ex:"Six jours.", img:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"},
+    {fr:"Sept", zh:"7", ex:"Sept heures.", img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d"},
+    {fr:"Huit", zh:"8", ex:"Huit étudiants.", img:"https://images.unsplash.com/photo-1522202176988-66273c2fd55f"},
+    {fr:"Neuf", zh:"9", ex:"Neuf ans.", img:"https://images.unsplash.com/photo-1500534314209-a25ddb2bd429"},
+    {fr:"Dix", zh:"10", ex:"Dix minutes.", img:"https://images.unsplash.com/photo-1500534623283-312aade485b7"}
+  ],
+  daily: [
+    {fr:"Livre", zh:"書", ex:"Je lis un livre.", img:"https://images.unsplash.com/photo-1512820790803-83ca734da794"},
+    {fr:"Table", zh:"桌子", ex:"La table est grande.", img:"https://images.unsplash.com/photo-1492724441997-5dc865305da7"},
+    {fr:"Chaise", zh:"椅子", ex:"La chaise est confortable.", img:"https://images.unsplash.com/photo-1505691938895-1758d7feb511"},
+    {fr:"Téléphone", zh:"手機", ex:"Mon téléphone sonne.", img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"},
+    {fr:"Sac", zh:"包包", ex:"J’ai un sac.", img:"https://images.unsplash.com/photo-1520975916090-3105956dac38"},
+    {fr:"Stylo", zh:"筆", ex:"J’écris avec un stylo.", img:"https://images.unsplash.com/photo-1515879218367-8466d910aaa4"},
+    {fr:"Eau", zh:"水", ex:"Je bois de l’eau.", img:"https://images.unsplash.com/photo-1502741338009-cac2772e18bc"},
+    {fr:"Pain", zh:"麵包", ex:"Je mange du pain.", img:"https://images.unsplash.com/photo-1549931319-a545dcf3bc73"},
+    {fr:"Porte", zh:"門", ex:"La porte est ouverte.", img:"https://images.unsplash.com/photo-1505691938895-1758d7feb511"},
+    {fr:"Fenêtre", zh:"窗戶", ex:"La fenêtre est fermée.", img:"https://images.unsplash.com/photo-1493809842364-78817add7ffb"}
+  ]
+};
+
+let index = 0, category='greet', speed=1;
+
+function speak(text) {
+  const speedRate = speed === 0.5 ? 0.24 : speed === 1.2 ? 0.6 : 0.4;
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=fr&client=tw-ob&ttsspeed=${speedRate}`;
+  new Audio(url).play();
+}
+
+function playCurrent(){ speak(data[category][index].fr); }
+
+function createCard(item) {
+  const card = document.createElement("div");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="inner">
+      <div class="front">
+        <b>${item.fr}</b>
+        <div class="speed-buttons">
+          <button onclick="event.stopPropagation();setSpeed(0.5)">0.5x</button>
+          <button onclick="event.stopPropagation();setSpeed(1)">1x</button>
+          <button onclick="event.stopPropagation();setSpeed(1.2)">1.2x</button>
+        </div>
+      </div>
+      <div class="back" style="background-image:url('${item.img}')">
+        <div>${item.zh}</div>
+        <div style="font-size:14px;margin-top:8px;">${item.ex}</div>
+      </div>
+    </div>
+  `;
+
+  card.onclick = () => card.classList.toggle("flipped");
+  return card;
+}
+
+function render(direction='next') {
+  const container = document.getElementById("cardContainer");
+  const newCard = createCard(data[category][index]);
+  newCard.style.opacity=0;
+  newCard.style.transform = direction==='next'?'translateX(80px)':'translateX(-80px)';
+  container.innerHTML="";
+  container.appendChild(newCard);
+  setTimeout(()=>{ newCard.style.transition="all 0.4s ease"; newCard.style.opacity=1; newCard.style.transform="translateX(0)"; },10);
+}
+
+function next(){ index=(index+1)%data[category].length; render('next'); }
+function prev(){ index=(index-1+data[category].length)%data[category].length; render('prev'); }
+
+function setCategory(cat, btn){ category=cat; index=0; document.querySelectorAll('.category-buttons button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); }
+function setSpeed(s){ speed=s; }
+
+const images=[
+  "https://images.unsplash.com/photo-1502602898657-3e91760cbb34",
+  "https://images.unsplash.com/photo-1499856871958-5b9627545d1a",
+  "https://images.unsplash.com/photo-1522098543979-ffc7f79d1b3d",
+  "https://images.unsplash.com/photo-1508057198894-247b23fe5ade"
+];
+let bgIndex=0, bg1=document.getElementById("bg1"), bg2=document.getElementById("bg2"), showingFirst=true;
+function switchBg(){ bgIndex=(bgIndex+1)%images.length; const nextImg=images[bgIndex]; if(showingFirst){ bg2.style.backgroundImage=`url(${nextImg})`; bg2.style.opacity=1; bg1.style.opacity=0;} else{ bg1.style.backgroundImage=`url(${nextImg})`; bg1.style.opacity=1; bg2.style.opacity=0;} showingFirst=!showingFirst; }
+bg1.style.backgroundImage=`url(${images[0]})`; setInterval(switchBg,10000);
+
+render();
+</script>
+
+</body>
+</html>
